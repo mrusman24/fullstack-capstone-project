@@ -5,12 +5,12 @@ const cors = require('cors');
 const pinoLogger = require('./logger');
 
 const connectToDatabase = require('./models/db');
-const {loadData} = require("./util/import-mongo/index");
+const { loadData } = require('./util/import-mongo/index');
 
 
 const app = express();
-app.use("*",cors());
-const port = 3060;
+app.use("*", cors());
+const port = process.env.PORT || 3060;
 
 // Connect to MongoDB; we just do this one time
 connectToDatabase().then(() => {
@@ -23,10 +23,16 @@ app.use(express.json());
 
 // Route files
 // Gift API Task 1: import the giftRoutes and store in a constant called giftroutes
-//{{insert code here}}
+const giftroutes = require('./routes/giftRoutes');
 
 // Search API Task 1: import the searchRoutes and store in a constant called searchRoutes
-//{{insert code here}}
+const searchRoutes = require('./routes/searchRoutes');
+
+// Auth routes
+const authRoutes = require('./routes/authRoutes');
+
+// Comment routes
+const commentRoutes = require('./routes/commentRoutes');
 
 
 const pinoHttp = require('pino-http');
@@ -36,10 +42,16 @@ app.use(pinoHttp({ logger }));
 
 // Use Routes
 // Gift API Task 2: add the giftRoutes to the server by using the app.use() method.
-//{{insert code here}}
+app.use('/api/gifts', giftroutes);
 
 // Search API Task 2: add the searchRoutes to the server by using the app.use() method.
-//{{insert code here}}
+app.use('/api/search', searchRoutes);
+
+// Auth routes
+app.use('/api/auth', authRoutes);
+
+// Comments routes
+app.use('/api/comments', commentRoutes);
 
 
 // Global Error Handler
@@ -48,9 +60,9 @@ app.use((err, req, res, next) => {
     res.status(500).send('Internal Server Error');
 });
 
-app.get("/",(req,res)=>{
-    res.send("Inside the server")
-})
+app.get("/", (req, res) => {
+    res.send("Inside the server");
+});
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);

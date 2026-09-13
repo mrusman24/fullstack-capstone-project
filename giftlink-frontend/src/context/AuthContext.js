@@ -1,10 +1,15 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const AppContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState("");
+  // Restore auth state from sessionStorage on app load
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return !!sessionStorage.getItem('auth-token');
+  });
+  const [userName, setUserName] = useState(() => {
+    return sessionStorage.getItem('name') || '';
+  });
 
   return (
     <AppContext.Provider value={{ isLoggedIn, setIsLoggedIn, userName, setUserName }}>
